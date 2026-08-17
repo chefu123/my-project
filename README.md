@@ -6,7 +6,9 @@
 
 ## 安装
 
-PowerShell：
+**不要在 notebook 里用 `%pip install`。** 内核经常解析不了 `pypi.org`，会报 `NameResolutionError`，这和包名无关。
+
+在终端安装（PowerShell）：
 
 ```powershell
 pip install cobra
@@ -18,9 +20,17 @@ pip install cobra
 pip install -r requirements.txt
 ```
 
-Notebook 里装完后需要 **Restart Kernel**。
+本机若也解析不了 `pypi.org`，改用清华镜像：
+
+```powershell
+pip install cobra -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+装完后 notebook 点 **Restart Kernel**，不要再跑 `%pip`。
 
 ## 检查是否装好
+
+打开 `hello_cobra.ipynb`，或直接：
 
 ```python
 import cobra
