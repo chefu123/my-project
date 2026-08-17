@@ -2,59 +2,47 @@
 
 代谢建模用的 Python 包是 **cobra**（[COBRApy](https://opencobra.github.io/cobrapy/)），不是 `cobra.exe`。
 
-`cobra.exe` 是 Windows 可执行文件名，PyPI 上没有这个包。`pip` 会把它当成包名 `cobra-exe` 去搜，所以会报 `No matching distribution found`。
+Notebook 在**远程 Linux 服务器**上跑。包必须装进**那台服务器、那个 Jupyter 内核用的 Python**，装在本机 Windows 上无效。
 
-## 安装
+## 不要在 notebook 里 `%pip`
 
-**不要在 notebook 里用 `%pip install`。** 内核经常解析不了 `pypi.org`，会报 `NameResolutionError`，这和包名无关。
+服务器上的 notebook 内核解析不了 `pypi.org`（`NameResolutionError`），`%pip` 会失败。到**服务器终端**（SSH）里装。
 
-在终端安装（PowerShell）：
+## 1. 先看内核用的是哪个 Python
 
-```powershell
-pip install cobra
-```
-
-或按本仓库锁定版本：
-
-```powershell
-pip install -r requirements.txt
-```
-
-本机若也解析不了 `pypi.org`，改用清华镜像：
-
-```powershell
-pip install cobra -i https://pypi.tuna.tsinghua.edu.cn/simple
-```
-
-推荐用项目虚拟环境（notebook 才能稳定找到包）：
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
-Linux：
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-## Notebook 报 `No module named 'cobra'`
-
-内核是隔离的，看不到 `pip --user` 装到 `~/.local` 的包。不要 `%pip`。
-
-1. 右上角把内核切到 **`.venv`**（或系统 `Python 3.12`）
-2. **Restart Kernel**
-3. 打开 `hello_cobra.ipynb` 只跑 `import cobra`
+在 notebook 里只跑这一格（不需要 cobra）：
 
 ```python
 import sys
 print(sys.executable)
-import cobra
-print(cobra.__version__)
 ```
 
-`sys.executable` 应是 `.venv` 里的 python，或 `/usr/bin/python3`。
+记下打印出来的路径，下面叫 `<PYTHON>`。
+
+## 2. SSH 到同一台服务器，用那个 Python 安装
+
+```bash
+<PYTHON> -m pip install cobra==0.32.1 -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+或按仓库锁定版本：
+
+```bash
+<PYTHON> -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+服务器若有 conda：
+
+```bash
+conda install -c conda-forge cobra
+```
+
+装完后 notebook **Restart Kernel**，再 `import cobra`。不要再 `%pip`。
+
+## 常见失败
+
+| 现象 | 原因 | 做法 |
+| --- | --- | --- |
+| `Failed to resolve 'pypi.org'` | 服务器 DNS 到不了 PyPI | 用清华镜像 `-i https://pypi.tuna.tsinghua.edu.cn/simple` |
+| `No module named 'cobra'` | 装到了另一个 Python，或 `pip --user` 被内核隔离 | 必须用 `sys.executable` 那个解释器 `-m pip install` |
+| `No matching distribution found for cobra.exe` | 包名写错 | 用 `cobra`，不要 `cobra.exe` |
