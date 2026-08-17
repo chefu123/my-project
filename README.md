@@ -19,17 +19,25 @@ print(sys.executable)
 
 记下打印出来的路径，下面叫 `<PYTHON>`。
 
-## 2. SSH 到同一台服务器，用那个 Python 安装
+## 2. 在服务器终端（SSH）里跑，不要贴进 Python 单元格
+
+这是 **bash**，不是 Python。路径前面要有 `/`。
+
+JupyterHub 常见路径：
 
 ```bash
-<PYTHON> -m pip install cobra==0.32.1 -i https://pypi.tuna.tsinghua.edu.cn/simple
+/opt/jhub/venv/bin/python3 -m pip install cobra==0.32.1 -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-或按仓库锁定版本：
+如果一定要在 notebook 里装，必须用 `!` 开头（还是 shell，不是 Python）：
 
-```bash
-<PYTHON> -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+```python
+!/opt/jhub/venv/bin/python3 -m pip install cobra==0.32.1 -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
+
+没有 `!`、也没有 SSH 终端，直接粘贴会变成 `python3(...)` 函数调用，报 `SyntaxError`。
+
+`/opt/jhub/venv` 多半是共享环境。若提示 `Permission denied`，不要硬装进系统 venv，改用自己的环境或让管理员装。
 
 服务器若有 conda：
 
