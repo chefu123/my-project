@@ -26,13 +26,35 @@ pip install -r requirements.txt
 pip install cobra -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-装完后 notebook 点 **Restart Kernel**，不要再跑 `%pip`。
+推荐用项目虚拟环境（notebook 才能稳定找到包）：
 
-## 检查是否装好
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
 
-打开 `hello_cobra.ipynb`，或直接：
+Linux：
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Notebook 报 `No module named 'cobra'`
+
+内核是隔离的，看不到 `pip --user` 装到 `~/.local` 的包。不要 `%pip`。
+
+1. 右上角把内核切到 **`.venv`**（或系统 `Python 3.12`）
+2. **Restart Kernel**
+3. 打开 `hello_cobra.ipynb` 只跑 `import cobra`
 
 ```python
+import sys
+print(sys.executable)
 import cobra
 print(cobra.__version__)
 ```
+
+`sys.executable` 应是 `.venv` 里的 python，或 `/usr/bin/python3`。
